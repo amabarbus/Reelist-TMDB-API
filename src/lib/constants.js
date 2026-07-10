@@ -18,14 +18,16 @@ export const GENRE_PALETTE = ["#C97352", "#6C8B58", "#B65E3C", "#A9927A", "#8FA9
 export const APP_THEMES = {
   'warm-cream': { label: 'Warm Cream', beige: '#F7F3EC', cream: '#FFFDF8', border: '#E6DDD3', text: '#2B2622' },
   'sage': { label: 'Sage', beige: '#E9ECE9', cream: '#F4F7F4', border: '#DCE5DC', text: '#2D342D' },
+  'cherry-blossom': { label: 'Cherry Blossom', beige: '#FDF2F4', cream: '#FFFFFF', border: '#F0D5DA', text: '#4A3B3D' },
   'sky': { label: 'Sky', beige: '#EBF3F5', cream: '#F5F9FA', border: '#E2EEF1', text: '#253033' },
   'midnight': { label: 'Midnight', beige: '#121214', cream: '#1E1E22', border: '#2D2D35', text: '#E0E0E0' },
   'obsidian': { label: 'Obsidian', beige: '#0A0A0A', cream: '#171717', border: '#262626', text: '#A3A3A3' },
-  'deep-forest': { label: 'Deep Forest', beige: '#0B120B', cream: '#162016', border: '#253525', text: '#D1D9D1' }
+  'deep-forest': { label: 'Deep Forest', beige: '#0B120B', cream: '#162016', border: '#253525', text: '#D1D9D1' },
+  'ocean-depths': { label: 'Ocean Depths', beige: '#0B131E', cream: '#15202B', border: '#2A3A4A', text: '#E8F0F8' }
 };
 
 export const getBadges = (stats) => [
-  // --- Milestones (1-10) ---
+  // Milestones
   { id: 'm1', icon: '🐣', label: 'Newbie', condition: stats.movies >= 1, conditionText: 'Watch at least 1 movie' },
   { id: 'm2', icon: '🥉', label: 'Novice', condition: stats.movies >= 10, conditionText: 'Watch at least 10 movies' },
   { id: 'm3', icon: '🥈', label: 'Silver Screen', condition: stats.movies >= 50, conditionText: 'Watch at least 50 movies' },
@@ -37,7 +39,7 @@ export const getBadges = (stats) => [
   { id: 'm9', icon: '📡', label: 'TV Addict', condition: stats.totalEpisodes >= 500, conditionText: 'Watch at least 500 episodes' },
   { id: 'm10', icon: '🤯', label: 'Series Master', condition: stats.totalEpisodes >= 1000, conditionText: 'Watch at least 1000 episodes' },
 
-  // --- Taste/Genres (11-25) ---
+  // Taste/Genres 
   { id: 'g1', icon: '👻', label: 'Horror Junkie', condition: stats.genreData.some(g => g.name === 'Horror' && g.value >= 10), conditionText: 'Watch at least 10 Horror movies' },
   { id: 'g2', icon: '🚀', label: 'Sci-Fi Nut', condition: stats.genreData.some(g => g.name === 'Science Fiction' && g.value >= 10), conditionText: 'Watch at least 10 Sci-Fi movies' },
   { id: 'g3', icon: '🧠', label: 'Intellectual', condition: stats.genreData.some(g => g.name === 'Documentary' && g.value >= 5), conditionText: 'Watch at least 5 Documentaries' },
@@ -54,7 +56,7 @@ export const getBadges = (stats) => [
   { id: 'g14', icon: '👨‍👩‍👧', label: 'Family Man', condition: stats.genreData.some(g => g.name === 'Family' && g.value >= 5), conditionText: 'Watch at least 5 Family movies' },
   { id: 'g15', icon: '🎶', label: 'Musical Lover', condition: stats.genreData.some(g => (g.name === 'Music' || g.name === 'Musical') && g.value >= 5), conditionText: 'Watch at least 5 Musical movies' },
 
-  // --- Quality/Critics (26-35) ---
+  // Quality/Critics 
   { id: 'q1', icon: '⭐️', label: 'Fair Critic', condition: stats.avg >= 5, conditionText: 'Maintain an average rating of 5 or higher' },
   { id: 'q2', icon: '🌟', label: 'High Standards', condition: stats.avg >= 7, conditionText: 'Maintain an average rating of 7 or higher' },
   { id: 'q3', icon: '🎬', label: 'Film Critic', condition: stats.avg >= 8.5, conditionText: 'Maintain an average rating of 8.5 or higher' },
@@ -66,7 +68,7 @@ export const getBadges = (stats) => [
   { id: 'q9', icon: '👁️', label: 'Observer', condition: stats.movies > 5, conditionText: 'Have watched more than 5 movies' },
   { id: 'q10', icon: '🖋️', label: 'Reviewer', condition: stats.movies > 30, conditionText: 'Have watched more than 30 movies' },
 
-  // --- Dedication/Activity (36-50) ---
+  // Dedication/Activity 
   { id: 'd1', icon: '🏃', label: 'Marathoner', condition: stats.totalMinutes >= 5000, conditionText: 'Have watched at least 5000 minutes of content' },
   { id: 'd2', icon: '⚡', label: 'Speed Demon', condition: stats.totalMinutes >= 10000, conditionText: 'Have watched at least 10000 minutes of content' },
   { id: 'd3', icon: '🛋️', label: 'Couch Potato', condition: stats.totalMinutes >= 20000, conditionText: 'Have watched at least 20000 minutes of content' },
@@ -83,7 +85,7 @@ export const getBadges = (stats) => [
   { id: 'd14', icon: '🏗️', label: 'Builder', condition: stats.shows >= 50, conditionText: 'Have watched at least 50 shows' },
   { id: 'd15', icon: '🏁', label: 'The End', condition: stats.shows >= 100, conditionText: 'Have watched at least 100 shows' },
 
-  // --- New Thematic Badges ---
+  // New Thematic Badges
   { id: 'b1', icon: '🍿', label: 'Cinema First-Timer', condition: stats?.movies >= 1, conditionText: 'Complete your very first movie.' },
   { id: 'b2', icon: '🕯️', label: 'Midnight Binger', condition: stats?.totalMinutes >= 2000 && stats?.streaks?.current >= 1, conditionText: 'Watch content late into the night.' },
   { id: 'b3', icon: '🏆', label: 'Top Tier Taste', condition: stats?.avg >= 8.0 && stats?.movies >= 20, conditionText: 'Keep an average rating of 8.0+ over 20 movies.' },

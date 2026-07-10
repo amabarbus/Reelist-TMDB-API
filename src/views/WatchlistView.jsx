@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { LayoutGrid, List, Star, Trash2, Tv } from "lucide-react";
+
 import PosterCard from "../components/PosterCard";
+
 import { STATUS_LABELS, STATUS_ORDER } from "../lib/constants";
 import { keyFor, titleOf } from "../lib/format";
+import { img } from "../lib/constants.js";
 
 function WatchlistView({ groups, tab, setTab, onOpen, tmdb, onSilentUpdate, layout, setLayout, customLists, tracked, addList, removeList, onToggleFavourite, favourites, notifications }) {
   const [typeFilter, setTypeFilter] = useState("all");
   const [showLists, setShowLists] = useState(false);
   const [activeListId, setActiveListId] = useState(null);
-
   const [showSort, setShowSort] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: 'addedAt', direction: 'desc' });
 
@@ -143,7 +145,6 @@ function WatchlistView({ groups, tab, setTab, onOpen, tmdb, onSilentUpdate, layo
 
             {showLists && (
               <div style={{ position: 'absolute', top: '110%', left: 0, background: 'var(--rl-cream)', border: '1px solid var(--rl-border)', borderRadius: '12px', padding: '8px', zIndex: 100, minWidth: '150px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                {/* Option to clear filter */}
                 <button className="rl-filter-btn" style={{ width: '100%', marginBottom: '4px' }} onClick={() => { setActiveListId(null); setShowLists(false); }}>
                   All items
                 </button>
@@ -231,7 +232,7 @@ function WatchlistView({ groups, tab, setTab, onOpen, tmdb, onSilentUpdate, layo
                       {opt.label}
                     </button>
 
-                    {/* Toggle Direction Arrow (Only shows for active sort key) */}
+                    {/* Toggle Direction Arrow */}
                     {sortConfig.key === opt.key && (
                       <button
                         className="rl-filter-btn rl-filter-btn-active"
@@ -382,25 +383,24 @@ function WatchlistView({ groups, tab, setTab, onOpen, tmdb, onSilentUpdate, layo
       }
 
       {/* Custom Delete List Confirm */}
-      {
-        deletePrompt && (
-          <div className="rl-bulk-overlay" onClick={() => setDeletePrompt(null)}>
-            <div className="rl-bulk-box" onClick={e => e.stopPropagation()}>
-              <h4 style={{ margin: "0 0 8px 0", fontSize: "15px", color: "var(--rl-text)" }}>Delete List</h4>
-              <p style={{ margin: "0 0 16px 0", fontSize: "13px", color: "#6a5f55", lineHeight: "1.4" }}>
-                Are you sure you want to permanently delete your list <strong>"{deletePrompt.name}"</strong>?
-              </p>
-              <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
-                <button className="rl-btn rl-btn-ghost" style={{ padding: "8px 14px", fontSize: "13px" }} onClick={() => setDeletePrompt(null)}>Cancel</button>
-                <button className="rl-btn rl-btn-primary" style={{ padding: "8px 14px", fontSize: "13px", background: "#a8452b", borderColor: "#a8452b" }} onClick={() => {
-                  removeList(deletePrompt.id);
-                  if (activeListId === deletePrompt.id) setActiveListId(null);
-                  setDeletePrompt(null);
-                }}>Yes, delete</button>
-              </div>
+      {deletePrompt && (
+        <div className="rl-bulk-overlay" onClick={() => setDeletePrompt(null)}>
+          <div className="rl-bulk-box" onClick={e => e.stopPropagation()}>
+            <h4 style={{ margin: "0 0 8px 0", fontSize: "15px", color: "var(--rl-text)" }}>Delete List</h4>
+            <p style={{ margin: "0 0 16px 0", fontSize: "13px", color: "#6a5f55", lineHeight: "1.4" }}>
+              Are you sure you want to permanently delete your list <strong>"{deletePrompt.name}"</strong>?
+            </p>
+            <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+              <button className="rl-btn rl-btn-ghost" style={{ padding: "8px 14px", fontSize: "13px" }} onClick={() => setDeletePrompt(null)}>Cancel</button>
+              <button className="rl-btn rl-btn-primary" style={{ padding: "8px 14px", fontSize: "13px", background: "#a8452b", borderColor: "#a8452b" }} onClick={() => {
+                removeList(deletePrompt.id);
+                if (activeListId === deletePrompt.id) setActiveListId(null);
+                setDeletePrompt(null);
+              }}>Yes, delete</button>
             </div>
           </div>
-        )
+        </div>
+      )
       }
     </div >
   );

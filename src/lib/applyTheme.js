@@ -1,5 +1,3 @@
-// Applies the user's saved theme before first paint, so the app doesn't
-
 try {
   const saved = window.localStorage.getItem("user-profile");
   if (saved) {

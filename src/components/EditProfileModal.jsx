@@ -85,8 +85,6 @@ function EditProfileModal({ profile, onSave, onClose }) {
 
         <div style={{ color: 'var(--rl-text)', fontWeight: '700', marginBottom: '8px', marginLeft: '8px', padding: '4px' }}> Name </div>
         <input className="rl-input" style={{ background: 'var(--rl-beige)', padding: '12px', borderRadius: '12px', marginBottom: '12px', width: '100%' }} value={name} onChange={e => setName(e.target.value)} placeholder="Display Name" />
-        <div style={{ color: 'var(--rl-text)', fontWeight: '700', marginBottom: '8px', marginLeft: '8px', padding: '4px' }}> Username </div>
-        <input className="rl-input" style={{ background: 'var(--rl-beige)', padding: '12px', borderRadius: '12px', marginBottom: '12px', width: '100%' }} value={username} onChange={e => setUsername(e.target.value)} placeholder="Username (e.g., @user123)" />
         <div style={{ color: 'var(--rl-text)', fontWeight: '700', marginBottom: '8px', marginLeft: '8px', padding: '4px' }}> Bio </div>
         <textarea className="rl-textarea" style={{ width: '100%', marginBottom: '12px' }} value={bio} onChange={e => setBio(e.target.value)} placeholder="Bio" />
 

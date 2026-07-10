@@ -1,20 +1,53 @@
-import { useEffect, useMemo } from "react";
-import { Loader2, Search as SearchIcon, X } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Loader2, Search as SearchIcon, X, User } from "lucide-react";
+
 import PosterCard from "../components/PosterCard";
+
 import { keyFor } from "../lib/format";
 
-function ExploreView({ query, setQuery, onSearch, results, loading, typeFilter, setTypeFilter, tracked, onOpen, recentSearches, removeRecentSearch, favourites, onToggleFavourite, favListId, toggleItemInList }) {
+function ExploreView({ query, setQuery, onSearch, results, loading, typeFilter, setTypeFilter, tracked, onOpen, recentSearches, removeRecentSearch, favourites, onToggleFavourite, favListId, toggleItemInList, onViewProfile }) {
+
+  const [userResults, setUserResults] = useState(null);
+  const [isSearchingUsers, setIsSearchingUsers] = useState(false);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      onSearch(query, false);
+      if (typeFilter === "users") {
+        searchLocalUsers(query);
+      } else {
+        onSearch(query, false);
+      }
     }, 500);
     return () => clearTimeout(delayDebounce);
-  }, [query]);
+  }, [query, typeFilter]);
+
+  const searchLocalUsers = async (searchQuery) => {
+    if (!searchQuery.trim()) {
+      setUserResults(null);
+      return;
+    }
+
+    setIsSearchingUsers(true);
+    try {
+      const res = await fetch(`http://localhost:3000/api/users/search?q=${searchQuery}`);
+      if (res.ok) {
+        const data = await res.json();
+        setUserResults(data);
+      }
+    } catch (err) {
+      setUserResults([]);
+    } finally {
+      setIsSearchingUsers(false);
+    }
+  };
 
   const submitSearch = () => {
     if (query.trim()) {
-      onSearch(query, true);
+      if (typeFilter === "users") {
+        searchLocalUsers(query);
+      } else {
+        onSearch(query, true);
+      }
     }
   };
 
@@ -24,6 +57,8 @@ function ExploreView({ query, setQuery, onSearch, results, loading, typeFilter, 
     return results.filter((r) => r.media_type === typeFilter);
   }, [results, typeFilter]);
 
+  const isLoading = typeFilter === "users" ? isSearchingUsers : loading;
+
   return (
     <div>
       <div className="rl-search-row">
@@ -31,26 +66,15 @@ function ExploreView({ query, setQuery, onSearch, results, loading, typeFilter, 
           <SearchIcon size={16} />
           <input
             className="rl-search-input"
-            placeholder="Search movies, TV shows…"
+            placeholder={typeFilter === "users" ? "Search for users..." : "Search movies, TV shows…"}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") submitSearch(); }}
           />
-
-          {/* Clear Search Button */}
           {query && (
             <button
               onClick={() => setQuery("")}
-              style={{
-                background: "none",
-                border: "none",
-                color: 'var(--rl-text)',
-                cursor: "pointer",
-                padding: "0",
-                display: "flex",
-                alignItems: "center"
-              }}
-              aria-label="Clear search"
+              style={{ background: "none", border: "none", color: 'var(--rl-text)', cursor: "pointer", padding: "0", display: "flex", alignItems: "center" }}
             >
               <X size={16} />
             </button>
@@ -58,18 +82,76 @@ function ExploreView({ query, setQuery, onSearch, results, loading, typeFilter, 
         </div>
         <button className="rl-btn rl-btn-primary" onClick={submitSearch}>Search</button>
       </div>
+
       <div className="rl-filter-row">
-        {["all", "movie", "tv"].map((t) => (
+        {["all", "movie", "tv", "users"].map((t) => (
           <button key={t} className={`rl-filter-btn ${typeFilter === t ? "rl-filter-btn-active" : ""}`} onClick={() => setTypeFilter(t)}>
-            {t === "all" ? "All" : t === "movie" ? "Movies" : "TV Shows"}
+            {t === "all" ? "All" : t === "movie" ? "Movies" : t === "tv" ? "TV Shows" : "Users"}
           </button>
         ))}
       </div>
 
-      {loading && <div className="rl-loading"><Loader2 className="rl-spin" size={20} /> Searching…</div>}
+      {isLoading && <div className="rl-loading"><Loader2 className="rl-spin" size={20} /> Searching…</div>}
 
-      {/* Recent Searches Panel */}
-      {!loading && !query.trim() && recentSearches && recentSearches.length > 0 && (
+      {/* TMDB MEDIA RESULTS */}
+      {typeFilter !== "users" && (
+        <>
+          {!loading && filtered && filtered.length === 0 && query.trim() && <div className="rl-empty">No results for "{query}". Try another title.</div>}
+
+          {!loading && filtered && filtered.length > 0 && (
+            <div className="rl-grid">
+              {filtered.map((item) => (
+                <PosterCard
+                  key={keyFor(item)}
+                  item={item}
+                  tracked={tracked}
+                  onOpen={onOpen}
+                  onToggleFavourite={onToggleFavourite}
+                  isFavourite={favourites.some(f => keyFor(f) === keyFor(item))}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* USER SEARCH RESULTS */}
+      {typeFilter === "users" && (
+        <>
+          {!isSearchingUsers && userResults && userResults.length === 0 && query.trim() && (
+            <div className="rl-empty">No users found matching "{query}".</div>
+          )}
+
+          {!isSearchingUsers && userResults && userResults.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {userResults.map((user) => (
+                <div
+                  key={user.id}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '16px', padding: '16px',
+                    background: 'var(--rl-cream)', border: '1px solid var(--rl-border)',
+                    borderRadius: '16px', cursor: 'pointer', transition: 'transform 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
+                  onClick={() => onViewProfile && onViewProfile(user.username)}
+                >
+                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--rl-beige)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
+                    {user.avatar ? <img src={user.avatar} alt={user.username} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <User size={24} color="#8a7d6f" />}
+                  </div>
+                  <div>
+                    <h3 style={{ margin: '0 0 4px 0', fontSize: '16px' }}>@{user.username}</h3>
+                    {user.bio && <p style={{ margin: 0, fontSize: '13px', color: '#8a7d6f', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{user.bio}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* RECENT SEARCHES */}
+      {typeFilter !== "users" && !loading && !query.trim() && recentSearches && recentSearches.length > 0 && (
         <div style={{ marginBottom: "24px" }}>
           <h3 style={{ fontSize: "14px", color: "#8a7d6f", marginBottom: "12px", fontWeight: "600" }}>Recent Searches</h3>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -85,7 +167,6 @@ function ExploreView({ query, setQuery, onSearch, results, loading, typeFilter, 
                 <button
                   style={{ background: "none", border: "none", color: "#a8452b", cursor: "pointer", display: "flex", alignItems: "center", padding: "4px" }}
                   onClick={() => removeRecentSearch(rs)}
-                  aria-label="Remove search"
                 >
                   <X size={16} />
                 </button>
@@ -95,24 +176,7 @@ function ExploreView({ query, setQuery, onSearch, results, loading, typeFilter, 
         </div>
       )}
 
-      {!loading && filtered && filtered.length === 0 && query.trim() && <div className="rl-empty">No results for "{query}". Try another title.</div>}
-
-      {!loading && filtered && filtered.length > 0 && (
-        <div className="rl-grid">
-          {filtered.map((item) => (
-            <PosterCard
-              key={keyFor(item)}
-              item={item}
-              tracked={tracked}
-              onOpen={onOpen}
-              onToggleFavourite={onToggleFavourite}
-              isFavourite={favourites.some(f => keyFor(f) === keyFor(item))}
-            />
-          ))}
-        </div>
-      )}
-
-      {!results && !loading && (!recentSearches || recentSearches.length === 0) && (
+      {!results && !loading && typeFilter !== "users" && (!recentSearches || recentSearches.length === 0) && (
         <div className="rl-empty">Search for a title to get started.</div>
       )}
     </div>

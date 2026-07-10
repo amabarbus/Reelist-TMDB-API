@@ -12,9 +12,13 @@
     "vite": "^8.1.1"
   },
   "dependencies": {
+    "@giphy/js-fetch-api": "^5.8.0",
+    "@giphy/react-components": "^1.6.0",
     "lucide-react": "^1.23.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "react-is": "^19.2.7",
+    "react-router-dom": "^7.18.1",
     "recharts": "^3.9.2"
   }
 }
